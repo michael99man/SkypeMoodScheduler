@@ -48,15 +48,15 @@ public class MainFrame extends JFrame {
 		
 		System.out.println("Window Launch");
 		
-		
+		System.out.println("Old Mood: " + getMood());
 		changeMood("Hi! This is an attempt to change my mood message using Applescript within Shell within Java! IKR");
-
+		System.out.println("New Mood: " + getMood());
 				
 
 	}
 	
 	private static final ScriptEngineManager sem = new ScriptEngineManager();
-	private static final ScriptEngine engine = sem.getEngineByName("AppleScript");
+	private static ScriptEngine engine = sem.getEngineByName("AppleScript");
 	
 	public static void changeMood(String in){
 		
@@ -69,4 +69,20 @@ public class MainFrame extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public static String getMood(){
+		String script = "tell application \"Skype\" to return (send command \"GET PROFILE MOOD_TEXT\" script name \"MoodGetter\")";
+		
+		try {
+			engine.put("tempMood",engine.eval(script));
+			
+			String tempString = (String) engine.get("tempMood");
+			return tempString.replaceAll("PROFILE MOOD_TEXT ","");
+		} catch (ScriptException e) {
+			e.printStackTrace();
+			return "Error";
+		}
+	}
+	
 }
