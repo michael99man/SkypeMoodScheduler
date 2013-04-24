@@ -12,7 +12,10 @@ public final class ScriptRunner {
 	public static void changeMood(String in){
 		
 		String script = "tell application \"Skype\" to send command \"SET PROFILE MOOD_TEXT " + in + "\" script name \"MoodChanger\"";
-		
+		runScript(script);
+	}
+	
+	public static void runScript(String script){
 		try {
 			engine.eval(script);
 		} catch (ScriptException e) {
@@ -21,7 +24,17 @@ public final class ScriptRunner {
 		}
 	}
 	
-	
+	public static String get(String script){
+		try {
+			engine.put("temp",engine.eval(script));
+			String tempString = (String) engine.get("temp");	
+			return tempString;
+		} catch (ScriptException e) {
+			e.printStackTrace();
+			return "Error";
+		}
+		
+	}
 	public static String getMood(){
 		String script = "tell application \"Skype\" to return (send command \"GET PROFILE MOOD_TEXT\" script name \"MoodGetter\")";
 		

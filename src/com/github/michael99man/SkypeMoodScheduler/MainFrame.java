@@ -75,9 +75,10 @@ public class MainFrame extends JFrame {
 		DynamicUpdater.setBounds(20, 129, 117, 44);
 		contentPane.add(DynamicUpdater);
 		
-		JButton BOB = new JButton("BOB");
+		JButton BOB = new JButton("AutoReplier");
 		BOB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				addBuilder(new AutoReplier());
 			}
 		});
 		BOB.setBounds(160, 129, 117, 44);
