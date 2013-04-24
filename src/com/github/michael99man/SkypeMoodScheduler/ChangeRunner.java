@@ -12,7 +12,7 @@ public class ChangeRunner implements Runnable{
 	
 	@Override
 	public void run(){
-		MainFrame.changeMood(moods.poll());
+		ScriptRunner.changeMood(moods.poll());
 	}
 
 }
