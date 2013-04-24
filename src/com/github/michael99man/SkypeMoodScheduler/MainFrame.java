@@ -49,7 +49,10 @@ public class MainFrame extends JFrame {
 		System.out.println("Window Launch");
 		
 		System.out.println("Old Mood: " + getMood());
-		changeMood("Hi! This is an attempt to change my mood message using Applescript within Shell within Java! IKR");
+		String text = "Hi! This is an attempt to change my mood message using Applescript within Shell within Java! IKR";
+		LinkedBlockingQueue<String> lbqs = new LinkedBlockingQueue<String>();
+		lbqs.add(text);
+		SwingUtilities.invokeLater(new ChangeRunner(lbqs));
 		System.out.println("New Mood: " + getMood());
 				
 
