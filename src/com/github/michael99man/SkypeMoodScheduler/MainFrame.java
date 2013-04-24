@@ -41,6 +41,7 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 301, 208);
 		contentPane = new JPanel();
@@ -102,11 +103,13 @@ public class MainFrame extends JFrame {
 	private void addBuilder(ToolBuilder builder){
 		JFrame newFrame = new JFrame();
 		newFrame.setVisible(true);
+		newFrame.setResizable(false);
 		
-		newFrame.setBounds(50, 50, 50, 50);
+		int[] windowSize = builder.getWindowSize();
+		
+		newFrame.setBounds(windowSize[0], windowSize[1], windowSize[2], windowSize[3]);
 		JPanel tempPane = new JPanel();
 		newFrame.setContentPane(tempPane);
-		
 		builder.build(tempPane);
 	}
 }

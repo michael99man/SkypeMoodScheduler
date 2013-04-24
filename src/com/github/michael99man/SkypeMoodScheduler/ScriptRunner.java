@@ -27,7 +27,6 @@ public final class ScriptRunner {
 		
 		try {
 			engine.put("tempMood",engine.eval(script));
-			
 			String tempString = (String) engine.get("tempMood");
 			return tempString.replaceAll("PROFILE MOOD_TEXT ","");
 		} catch (ScriptException e) {

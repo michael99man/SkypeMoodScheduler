@@ -5,4 +5,6 @@ import javax.swing.JPanel;
 public interface ToolBuilder {
 	void build(JPanel pane);
 	void unbuild(JPanel pane);
+	int[] getWindowSize();
+	
 }

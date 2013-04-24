@@ -16,4 +16,10 @@ public class MoodScheduler implements ToolBuilder {
 		
 	}
 
+	@Override
+	public int[] getWindowSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
