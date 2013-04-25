@@ -2,6 +2,10 @@ package com.github.michael99man.SkypeMoodScheduler;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -13,9 +17,7 @@ public class AutoReplier implements ToolBuilder {
 	private String target = "#universelkl/$e86518bb31167572";
 	private static String user = "michael99man";
 
-	
-	
-	//IDEA: KEEP LIST OF MESSAGES PLAYED WHILE IT'S ON
+	// IDEA: KEEP LIST OF MESSAGES PLAYED WHILE IT'S ON
 	private int delay = 1;
 
 	private JTextField durationField;
@@ -32,7 +34,7 @@ public class AutoReplier implements ToolBuilder {
 				Thread checker = new Thread(new Checker(delay, target));
 				checker.start();
 				System.out.println("Start");
-				
+
 			}
 		});
 		goButton.setBounds(20, 20, 200, 200);
@@ -53,59 +55,84 @@ public class AutoReplier implements ToolBuilder {
 
 	private static class Checker implements Runnable {
 
-		private static String checkCommand;
-		
+		// private static String checkCommand;
+
 		private static final String REPLYTEXT = "MESSAGE RECEIVED";
 		private int delay;
-		private String target;
-		private int originalEnd;
+		// private String target;
+		// private int originalEnd;
+		private static Map<String, Integer> IDMAP = new HashMap<String, Integer>();
 
 		public Checker(int delay, String target) {
 			this.delay = delay;
-			this.target = target;
+			// this.target = target;
 
-			checkCommand = "tell application \"Skype\" to return (send command \"GET CHAT "
+			// String script =
+			// "tell application \"Skype\" to send command \"CHATMESSAGE " +
+			// target + " Autoreplier: On\" script name \"SkypeToolkit\"";
+			// ScriptRunner.runScript(script);
+
+			String script = "tell application \"Skype\" to return (send command \"SEARCH RECENTCHATS\" script name \"SkypeTookit\")";
+			String recentChats = ScriptRunner.get(script)
+					.replaceAll("CHATS ", "").replaceAll(",", "");
+			System.out.println(recentChats);
+
+			String[] chatList = recentChats.split(" ");
+
+			for (String id : chatList) {
+				int[] midArray = check(id);
+				int origLast = midArray[midArray.length - 1];
+				IDMAP.put(id, origLast);
+
+				// int[] originalValues = check(id);
+				// originalEnd = originalValues;
+			}
+
+		}
+
+		private String getCommand(String target) {
+			String checkCommand = "tell application \"Skype\" to return (send command \"GET CHAT "
 					+ target
 					+ " RECENTCHATMESSAGES\" script name \"SkypeToolkit\")";
-			int[] originalValues = check();
-			originalEnd = originalValues[originalValues.length - 1];
-			
-			String script = "tell application \"Skype\" to send command \"CHATMESSAGE " + target + " Autoreplier: On\" script name \"SkypeToolkit\"";
-			ScriptRunner.runScript(script);
+			return checkCommand;
+
 		}
 
 		@Override
 		public void run() {
 			while (true) {
 				try {
+					for (String id : IDMAP.keySet()) {
 
-					int[] newValues = check();
-					int newEnd = newValues[newValues.length - 1];
+						int[] newValues = check(id);
+						int newEnd = newValues[newValues.length - 1];
 
-					if (!(newEnd == originalEnd)) {
-						if (validate(newEnd) == 1) {
-							System.out.println("There's something new!");
-							
-							String script = "tell application \"Skype\" to send command \"CHATMESSAGE " + target + " MESSAGE RECEIVED\" script name \"SkypeToolkit\"";
-							ScriptRunner.runScript(script);
-							
-						} else if (validate(newEnd) == 0){
-							System.out.println("You just wrote something.");		
-						}
-						originalEnd = new Integer(newEnd);
+						if (!(newEnd == IDMAP.get(id))) {
+							if (validate(newEnd) == 1) {
+								System.out.println("There's something new!");
+
+								String script = "tell application \"Skype\" to send command \"CHATMESSAGE "
+										+ id
+										+ " MESSAGE RECEIVED\" script name \"SkypeToolkit\"";
+								ScriptRunner.runScript(script);
+
+							} else if (validate(newEnd) == 0) {
+								System.out.println("You just wrote something.");
+							}
+							IDMAP.put(id, newEnd);
+						}	
 					}
-					//Thread.sleep(delay * 1000);
+					Thread.sleep(delay * 1000);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
-		private int[] check() {
+		private int[] check(String id) {
 
-			String origMessages = ScriptRunner.get(checkCommand);
-			int parseLength = ("CHAT " + target + " RECENTCHATMESSAGES")
-					.length();
+			String origMessages = ScriptRunner.get(getCommand(id));
+			int parseLength = ("CHAT " + id + " RECENTCHATMESSAGES").length();
 			origMessages = (origMessages.substring(parseLength + 1))
 					.replaceAll(",", "");
 			String[] origStrings = origMessages.split(" ");
@@ -127,9 +154,12 @@ public class AutoReplier implements ToolBuilder {
 					+ end + " FROM_HANDLE\" script name \"SkypeToolkit\")";
 			String sender = ScriptRunner.get(script);
 			if (sender.contains(user)) {
-				if ((ScriptRunner.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE " + end + " BODY\" script name \"SkypeToolkit\")")).contains(REPLYTEXT)){
+				if ((ScriptRunner
+						.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE "
+								+ end + " BODY\" script name \"SkypeToolkit\")"))
+						.contains(REPLYTEXT)) {
 					return 2;
-				} else{
+				} else {
 					return 0;
 				}
 			} else {
