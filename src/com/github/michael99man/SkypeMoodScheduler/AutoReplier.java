@@ -10,8 +10,7 @@ import javax.swing.JTextField;
 public class AutoReplier implements ToolBuilder {
 
 	private static final int[] windowSize = { 100, 100, 300, 300 };
-
-	private String target = "#michael99man/$williamrandyandmay;ea596a9e35ad23e1";
+	private String target = "#universelkl/$e86518bb31167572";
 	private static String user = "michael99man";
 
 	private int delay = 1;
@@ -29,7 +28,8 @@ public class AutoReplier implements ToolBuilder {
 			public void actionPerformed(ActionEvent arg0) {
 				Thread checker = new Thread(new Checker(delay, target));
 				checker.start();
-
+				System.out.println("Start");
+				
 			}
 		});
 		goButton.setBounds(20, 20, 200, 200);
@@ -51,7 +51,8 @@ public class AutoReplier implements ToolBuilder {
 	private static class Checker implements Runnable {
 
 		private static String checkCommand;
-
+		
+		private static final String REPLYTEXT = "MESSAGE RECEIVED";
 		private int delay;
 		private String target;
 		private int originalEnd;
@@ -65,6 +66,9 @@ public class AutoReplier implements ToolBuilder {
 					+ " RECENTCHATMESSAGES\" script name \"SkypeToolkit\")";
 			int[] originalValues = check();
 			originalEnd = originalValues[originalValues.length - 1];
+			
+			String script = "tell application \"Skype\" to send command \"CHATMESSAGE " + target + " Autoreplier: On\" script name \"SkypeToolkit\"";
+			ScriptRunner.runScript(script);
 		}
 
 		@Override
@@ -76,17 +80,19 @@ public class AutoReplier implements ToolBuilder {
 					int newEnd = newValues[newValues.length - 1];
 
 					if (!(newEnd == originalEnd)) {
-						if (validate(newEnd)) {
+						if (validate(newEnd) == 1) {
 							System.out.println("There's something new!");
 							
-							originalEnd = new Integer(newEnd);
-						} else {
-							System.out.println("You just wrote something");
+							String script = "tell application \"Skype\" to send command \"CHATMESSAGE " + target + " MESSAGE RECEIVED\" script name \"SkypeToolkit\"";
+							ScriptRunner.runScript(script);
+							
+						} else if (validate(newEnd) == 0){
+							System.out.println("You just wrote something.");		
 						}
-
+						originalEnd = new Integer(newEnd);
 					}
-					Thread.sleep(delay * 1000);
-				} catch (InterruptedException e) {
+					//Thread.sleep(delay * 1000);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -112,15 +118,19 @@ public class AutoReplier implements ToolBuilder {
 			return tempArray;
 		}
 
-		private boolean validate(int end) {
+		private int validate(int end) {
 
 			String script = "tell application \"Skype\" to return (send command \"GET CHATMESSAGE "
 					+ end + " FROM_HANDLE\" script name \"SkypeToolkit\")";
 			String sender = ScriptRunner.get(script);
 			if (sender.contains(user)) {
-				return false;
+				if ((ScriptRunner.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE " + end + " BODY\" script name \"SkypeToolkit\")")).contains(REPLYTEXT)){
+					return 2;
+				} else{
+					return 0;
+				}
 			} else {
-				return true;
+				return 1;
 			}
 		}
 	}
