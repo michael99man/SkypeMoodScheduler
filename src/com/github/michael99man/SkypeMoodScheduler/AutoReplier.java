@@ -13,6 +13,9 @@ public class AutoReplier implements ToolBuilder {
 	private String target = "#universelkl/$e86518bb31167572";
 	private static String user = "michael99man";
 
+	
+	
+	//IDEA: KEEP LIST OF MESSAGES PLAYED WHILE IT'S ON
 	private int delay = 1;
 
 	private JTextField durationField;
