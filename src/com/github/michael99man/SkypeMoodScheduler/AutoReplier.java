@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 
 public class AutoReplier implements ToolBuilder {
 
+	private static boolean on = false;
 	private static final int[] windowSize = { 100, 100, 300, 300 };
 	private String target = "#universelkl/$e86518bb31167572";
 	private static String user = "michael99man";
@@ -20,25 +21,50 @@ public class AutoReplier implements ToolBuilder {
 	// IDEA: KEEP LIST OF MESSAGES PLAYED WHILE IT'S ON
 	private int delay = 1;
 
+	private JTextField replyMessage;
 	private JTextField durationField;
 	private JButton goButton;
+	private JButton stopButton;
 	private JPanel parent;
+	private ToolBuilder instance = this;
 
 	@Override
 	public void build(JPanel pane) {
 		parent = pane;
+		parent.setLayout(null);
 
 		goButton = new JButton("Go!");
 		goButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Thread checker = new Thread(new Checker(delay, target));
-				checker.start();
-				System.out.println("Start");
+
+				if (!on) {
+					on = true;
+					Thread checker = new Thread(new Checker(delay, target, replyMessage.getText()));
+					checker.start();
+					System.out.println("Start");
+				}
 
 			}
 		});
-		goButton.setBounds(20, 20, 200, 200);
+		goButton.setBounds(20, 20, 40, 40);
 
+		stopButton = new JButton("Stop");
+		stopButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (on) {
+					on = false;
+					System.out.println("Stop");
+				}
+
+			}
+		});
+		stopButton.setBounds(20, 100, 40, 40);
+
+		replyMessage = new JTextField("Input reply here");
+		replyMessage.setBounds(80,70,200,30);
+
+		parent.add(replyMessage);
+		parent.add(stopButton);
 		parent.add(goButton);
 	}
 
@@ -57,13 +83,14 @@ public class AutoReplier implements ToolBuilder {
 
 		// private static String checkCommand;
 
-		private static final String REPLYTEXT = "MESSAGE RECEIVED";
+		private static String REPLYTEXT;
 		private int delay;
 		// private String target;
 		// private int originalEnd;
 		private static Map<String, Integer> IDMAP = new HashMap<String, Integer>();
 
-		public Checker(int delay, String target) {
+		public Checker(int delay, String target, String reply) {
+			REPLYTEXT = reply;
 			this.delay = delay;
 			// this.target = target;
 
@@ -75,9 +102,9 @@ public class AutoReplier implements ToolBuilder {
 			String script = "tell application \"Skype\" to return (send command \"SEARCH RECENTCHATS\" script name \"SkypeTookit\")";
 			String recentChats = ScriptRunner.get(script)
 					.replaceAll("CHATS ", "").replaceAll(",", "");
-			System.out.println(recentChats);
-
 			String[] chatList = recentChats.split(" ");
+			
+			System.out.println(chatList.length);
 
 			for (String id : chatList) {
 				int[] midArray = check(id);
@@ -100,7 +127,7 @@ public class AutoReplier implements ToolBuilder {
 
 		@Override
 		public void run() {
-			while (true) {
+			while (on) {
 				try {
 					for (String id : IDMAP.keySet()) {
 
@@ -113,18 +140,19 @@ public class AutoReplier implements ToolBuilder {
 
 								String script = "tell application \"Skype\" to send command \"CHATMESSAGE "
 										+ id
-										+ " MESSAGE RECEIVED\" script name \"SkypeToolkit\"";
+										+ " " + REPLYTEXT + "\" script name \"SkypeToolkit\"";
 								ScriptRunner.runScript(script);
 
 							} else if (validate(newEnd) == 0) {
 								System.out.println("You just wrote something.");
 							}
 							IDMAP.put(id, newEnd);
-						}	
+						}
 					}
 					Thread.sleep(delay * 1000);
 				} catch (Exception e) {
 					e.printStackTrace();
+					on = false;
 				}
 			}
 		}
