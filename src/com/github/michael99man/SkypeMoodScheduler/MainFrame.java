@@ -5,6 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
@@ -12,6 +14,9 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
+import javax.swing.JScrollBar;
+import javax.swing.ScrollPaneConstants.*;
 
 public class MainFrame extends JFrame {
 
@@ -43,7 +48,7 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 301, 208);
+		setBounds(100, 100, 302, 216);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -89,14 +94,15 @@ public class MainFrame extends JFrame {
 		topLogo.setBounds(35, 18, 257, 44);
 		contentPane.add(topLogo);
 		
+		
 		System.out.println("Window Launch");
 		
-		System.out.println("Old Mood: " + ScriptRunner.getMood());
-		String text = "Hi! This is an attempt to change my mood message using Applescript within Shell within Java! IKR";
+		//System.out.println("Old Mood: " + ScriptRunner.getMood());
+		//String text = "Hi! This is an attempt to change my mood message using Applescript within Shell within Java! IKR";
 		//LinkedBlockingQueue<String> lbqs = new LinkedBlockingQueue<String>();
 		//lbqs.add(text);
 		//SwingUtilities.invokeLater(new ChangeRunner(lbqs));
-		System.out.println("New Mood: " + ScriptRunner.getMood());
+		//System.out.println("New Mood: " + ScriptRunner.getMood());
 
 	}
 	
