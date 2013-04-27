@@ -67,7 +67,7 @@ public class AutoReplier implements ToolBuilder {
 						messages = messages + m.formatString() + "\n";
 					}
 					
-
+					
 					
 					
 					textArea.setText(messages);
