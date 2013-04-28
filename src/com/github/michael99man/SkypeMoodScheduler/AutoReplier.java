@@ -1,22 +1,29 @@
 package com.github.michael99man.SkypeMoodScheduler;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 public class AutoReplier implements ToolBuilder {
 
 	private static boolean on = false;
 	private static final int[] windowSize = { 100, 100, 300, 300 };
-	//private String target = "#universelkl/$e86518bb31167572";
+	// private String target = "#universelkl/$e86518bb31167572";
 	private static String user = "michael99man";
 
 	// IDEA: KEEP LIST OF MESSAGES PLAYED WHILE IT'S ON
@@ -24,97 +31,119 @@ public class AutoReplier implements ToolBuilder {
 
 	private JTextField replyMessage;
 	private JButton goButton;
-	private JButton stopButton;
 	private JPanel parent;
+	private JFrame frame;
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
-	
+	private AutoReplier instance = this;
+
 	private static LinkedList<SkypeMessage> messageList = new LinkedList<SkypeMessage>();
 
-	
-//	 private ToolBuilder instance = this;
+	// private ToolBuilder instance = this;
 
 	@Override
-	public void build(JPanel pane) {
-		parent = pane;
-		parent.setLayout(null);
+	public void build(JPanel pane, JFrame frame) {
+		this.frame = frame;
+		
+		frame.setMinimumSize(new Dimension(300,375));
+		frame.setResizable(false);
 
-		goButton = new JButton("Go!");
+
+		parent = pane;
+		parent.setLayout(new BoxLayout(parent, BoxLayout.PAGE_AXIS));
+
+		goButton = new JButton("Start");
 		goButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+				if (replyMessage.getText().equalsIgnoreCase("Input Reply Here")){
+					textArea.setText("ERROR: SET INPUT MESSAGE");
+					System.out.println("RUN FAILED");
+					
+					return;
+				}
 				if (!on) {
 					on = true;
-					Thread checker = new Thread(new Checker(delay, replyMessage.getText()));
+					
+					
+					messageList = new LinkedList<SkypeMessage>();
+					
+					messageList.add(SkypeMessage.logNew("STARTED",
+							"AUTOREPLIER"));
+					updateText();
+					
+					Thread checker = new Thread(new Checker(delay, replyMessage
+							.getText(), instance));
 					checker.start();
+
+					
 					System.out.println("Start");
-				}
-
-			}
-		});
-		goButton.setBounds(20, 20, 40, 40);
-
-		stopButton = new JButton("Stop");
-		stopButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (on) {
+					goButton.setText("Stop");
+				} else {
 					on = false;
-					System.out.println("Stop");
+					System.out.println("Stopped");
+					goButton.setText("Start");
 					
-					String messages = "";
-					
-					for (SkypeMessage m : messageList){
-						messages = messages + m.formatString() + "\n";
-					}
-					
-					
-					
-					
-					textArea.setText(messages);
-					
-					
+					messageList.add(SkypeMessage.logNew("STOPPED",
+							"AUTOREPLIER"));
+					updateText();
 				}
 
 			}
 		});
-		stopButton.setBounds(20, 70, 40, 40);
+
+		textArea = new JTextArea();
+		textArea.setEditable(false);
+		scrollPane = new JScrollPane(textArea);
 
 		replyMessage = new JTextField("Input reply here");
-		replyMessage.setBounds(60,10,230,30);
+		replyMessage.setMaximumSize(new Dimension(800, 30));
 
-		
-		textArea = new JTextArea();
-		textArea.setBounds(65, 45, 230, 200);
-
-		
-		scrollPane = new JScrollPane(textArea);
-		scrollPane.setBounds(65, 45, 230, 200);
-		scrollPane.createVerticalScrollBar();
-		//scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-	
-		
-		
-		parent.add(textArea);
-		parent.add(scrollPane);
-		
-		
 		parent.add(replyMessage);
-		parent.add(stopButton);
+		parent.add(Box.createRigidArea(new Dimension(0, 8)));
+
+		scrollPane.setMinimumSize(new Dimension(230, 200));
+
+		TitledBorder title = BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED),
+				"Messages");
+		title.setTitleJustification(TitledBorder.LEFT);
+		scrollPane.setBorder(title);
+
+		parent.add(scrollPane);
+
+		parent.add(Box.createRigidArea(new Dimension(0, 5)));
+
+		
+		goButton.setMinimumSize(new Dimension(600, 50));
+		goButton.setPreferredSize(new Dimension(600, 50));
+		goButton.setAlignmentX(parent.getAlignmentX());
+		
 		parent.add(goButton);
+
+		parent.add(Box.createRigidArea(new Dimension(0, 5)));
+
+	}
+
+	public void updateText() {
+		String messages = "";
+		for (SkypeMessage m : messageList) {
+			messages = messages + m.formatString() + "\n";
+		}
+		textArea.setText(messages);
 	}
 
 	@Override
 	public void unbuild(JPanel pane) {
 		parent.remove(replyMessage);
-		parent.remove(stopButton);
 		parent.remove(goButton);
-
+		parent.remove(replyMessage);
+		parent.remove(scrollPane);
 		
 		if (on) {
 			on = false;
-			System.out.println("Stop");
+			System.out.println("STOP ON WINDOW CLOSE");
 		}
-		
+
 	}
 
 	@Override
@@ -126,14 +155,15 @@ public class AutoReplier implements ToolBuilder {
 
 		// private static String checkCommand;
 
-		
 		private static String REPLYTEXT;
 		private int delay;
+		private AutoReplier parent;
 		// private String target;
 		// private int originalEnd;
 		private static Map<String, Integer> IDMAP = new HashMap<String, Integer>();
 
-		public Checker(int delay, String reply) {
+		public Checker(int delay, String reply, AutoReplier parent) {
+			this.parent = parent;
 			REPLYTEXT = reply;
 			this.delay = delay;
 
@@ -141,7 +171,7 @@ public class AutoReplier implements ToolBuilder {
 			String recentChats = ScriptRunner.get(script)
 					.replaceAll("CHATS ", "").replaceAll(",", "");
 			String[] chatList = recentChats.split(" ");
-			
+
 			System.out.println(chatList.length);
 
 			for (String id : chatList) {
@@ -164,7 +194,7 @@ public class AutoReplier implements ToolBuilder {
 		@Override
 		public void run() {
 			while (true) {
-				if (!on){
+				if (!on) {
 					break;
 				}
 				try {
@@ -179,31 +209,32 @@ public class AutoReplier implements ToolBuilder {
 
 								String script = "tell application \"Skype\" to send command \"CHATMESSAGE "
 										+ id
-										+ " " + REPLYTEXT + "\" script name \"SkypeToolkit\"";
+										+ " "
+										+ REPLYTEXT
+										+ "\" script name \"SkypeToolkit\"";
 								ScriptRunner.runScript(script);
-								
-								
-								String body = ScriptRunner.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE " + newEnd + " BODY\" script name \"SkypeToolkit\")");
+
+								String body = ScriptRunner
+										.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE "
+												+ newEnd
+												+ " BODY\" script name \"SkypeToolkit\")");
 								int index = body.indexOf("BODY");
 								String message = body.substring(index + 5);
-								
-								
-								String sender = ScriptRunner.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE "
-										+ newEnd + " FROM_HANDLE\" script name \"SkypeToolkit\")");
+
+								String sender = ScriptRunner
+										.get("tell application \"Skype\" to return (send command \"GET CHATMESSAGE "
+												+ newEnd
+												+ " FROM_HANDLE\" script name \"SkypeToolkit\")");
 								index = sender.indexOf("FROM_HANDLE");
 								sender = sender.substring(index + 12);
-							
-								messageList.add(SkypeMessage.logNew(message, sender));
-								
-								
 
+								messageList.add(SkypeMessage.logNew(message,
+										sender));
+								parent.updateText();
 							} else if (validate(newEnd) == 0) {
 								System.out.println("You just wrote something.");
-								//System.out.println(id + "   " + newEnd);
-								
-								
+								// System.out.println(id + "   " + newEnd);
 
-								
 							}
 							IDMAP.put(id, newEnd);
 						}

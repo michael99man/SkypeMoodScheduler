@@ -1,22 +1,15 @@
 package com.github.michael99man.SkypeMoodScheduler;
 
 import java.awt.EventQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
-import javax.swing.ScrollPaneConstants.*;
 
 public class MainFrame extends JFrame {
 
@@ -110,13 +103,12 @@ public class MainFrame extends JFrame {
 	private void addBuilder(ToolBuilder builder){
 		JFrame newFrame = new JFrame();
 		newFrame.setVisible(true);
-		newFrame.setResizable(false);
-		
+				
 		int[] windowSize = builder.getWindowSize();
 		
 		newFrame.setBounds(windowSize[0], windowSize[1], windowSize[2], windowSize[3]);
 		JPanel tempPane = new JPanel();
 		newFrame.setContentPane(tempPane);
-		builder.build(tempPane);
+		builder.build(tempPane, newFrame);
 	}
 }

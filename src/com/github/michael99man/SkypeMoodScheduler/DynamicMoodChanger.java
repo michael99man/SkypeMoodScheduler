@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -19,11 +20,12 @@ public class DynamicMoodChanger implements ToolBuilder {
 	private Choice choice;
 	private JButton goButton;
 	private JTextField amountField;
+	private JFrame frame;
 	
 	@Override
-	public void build(JPanel pane) {
+	public void build(JPanel pane, JFrame frame) {
 		parent = pane;
-		
+		this.frame = frame;
 		
 		textField = new JTextField();
 		textField.setText("Mood message here");
