@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class SkypeMessage {
-	private static final String DATE_FORMAT = "MM/dd/yy (h:m:s a)";
+	private static final String DATE_FORMAT = "MM/dd/yy (h:mm:ss a)";
 	
 	private String date;
 	private String sender;

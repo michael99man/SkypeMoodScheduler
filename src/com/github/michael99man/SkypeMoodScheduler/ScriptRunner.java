@@ -10,7 +10,6 @@ public final class ScriptRunner {
 	private static ScriptEngine engine = sem.getEngineByName("AppleScript");
 	
 	public static void changeMood(String in){
-		
 		String script = "tell application \"Skype\" to send command \"SET PROFILE MOOD_TEXT " + in + "\" script name \"MoodChanger\"";
 		runScript(script);
 	}
