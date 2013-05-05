@@ -36,6 +36,7 @@ public class AutoReplier implements ToolBuilder {
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
 	private AutoReplier instance = this;
+	
 
 	private static LinkedList<SkypeMessage> messageList = new LinkedList<SkypeMessage>();
 
@@ -284,5 +285,10 @@ public class AutoReplier implements ToolBuilder {
 				return 1;
 			}
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "AutoReplier";
 	}
 }

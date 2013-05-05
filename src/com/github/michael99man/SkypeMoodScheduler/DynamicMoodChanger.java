@@ -14,12 +14,16 @@ public class DynamicMoodChanger implements ToolBuilder {
 	private JPanel parent;
 	private int[] windowSize = { 200, 100, 500, 300 };
 
+	public static Boolean b;
+	
+	
 	private JTextField textField;
 	private Choice choice;
 	private JButton goButton;
 	private JFrame frame;
 	public static boolean started = false;
 	private Thread UPDATER;
+
 	
 	@Override
 	public void build(JPanel pane, JFrame frame) {
@@ -153,5 +157,11 @@ public class DynamicMoodChanger implements ToolBuilder {
 			}
 		}
 
+	}
+
+
+	@Override
+	public String getName() {
+		return "DynamicMoodChanger";
 	}
 }

@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 public class MoodScheduler implements ToolBuilder {
 
 	private JFrame frame;
-	private JPanel parent;
+	private JPanel parent;	
 	
 	@Override
 	public void build(JPanel pane, JFrame frame) {
@@ -25,6 +25,11 @@ public class MoodScheduler implements ToolBuilder {
 	public int[] getWindowSize() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getName() {
+		return "MoodScheduler";
 	}
 
 }
