@@ -32,6 +32,7 @@ public class AutoReplier implements ToolBuilder {
 	private JTextField replyMessage;
 	private JButton goButton;
 	private JPanel parent;
+	@SuppressWarnings("unused")
 	private JFrame frame;
 	private JTextArea textArea;
 	private JScrollPane scrollPane;

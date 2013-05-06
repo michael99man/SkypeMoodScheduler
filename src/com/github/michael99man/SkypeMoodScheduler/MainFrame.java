@@ -10,7 +10,6 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -69,6 +68,7 @@ public class MainFrame extends JFrame{
 		SpammerTool.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!spammer) {
+					addBuilder(new Spammer());
 					spammer = true;
 				}
 			}
@@ -122,14 +122,13 @@ public class MainFrame extends JFrame{
 	private void addBuilder(ToolBuilder builder) {
 		JFrame newFrame = new frame(builder);
 		
-	
-		
 		newFrame.setVisible(true);
 		int[] windowSize = builder.getWindowSize();
 
 		
 		newFrame.setBounds(windowSize[0], windowSize[1], windowSize[2],
 				windowSize[3]);
+		
 		JPanel tempPane = new JPanel();
 		newFrame.setContentPane(tempPane);
 		builder.build(tempPane, newFrame);
@@ -138,7 +137,7 @@ public class MainFrame extends JFrame{
 	
 	public class frame extends JFrame implements WindowListener{
 
-		
+		private static final long serialVersionUID = -8054919442026309983L;
 		public ToolBuilder builder;
 		
 		public frame(ToolBuilder Builder){
@@ -165,6 +164,8 @@ public class MainFrame extends JFrame{
 				dynamicMood = false;
 			} else if (builder.getName().equals("AutoReplier")){
 				autoreplier = false;
+			} else if (builder.getName().equals("Spammer")){
+				spammer = false;
 			} else {
 				System.out.println("FAILURE: " + builder.getName());
 			}

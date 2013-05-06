@@ -20,6 +20,7 @@ public class DynamicMoodChanger implements ToolBuilder {
 	private JTextField textField;
 	private Choice choice;
 	private JButton goButton;
+	@SuppressWarnings("unused")
 	private JFrame frame;
 	public static boolean started = false;
 	private Thread UPDATER;

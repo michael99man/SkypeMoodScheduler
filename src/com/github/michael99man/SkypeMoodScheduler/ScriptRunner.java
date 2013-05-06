@@ -31,9 +31,33 @@ public final class ScriptRunner {
 		} catch (ScriptException e) {
 			e.printStackTrace();
 			return "Error";
-		}
-		
+		}	
 	}
+	
+	public static boolean SkypeOn(){
+		try {
+			String script = "tell application \"System Events\" to set temp to ((name of processes) contains \"Skype\")\n" +
+					"if (temp equals true)\n" +  
+					"return \"true\"\n" +
+				"else\n" + 
+					"return \"false\"\n" +
+				"end if";
+			
+			engine.put("temp",engine.eval(script));
+			
+			String bool = (String) engine.get("temp");
+			if (bool.equals("true")){
+				return true;
+			} else {
+				return false;
+			}
+		} catch (ScriptException e) {
+			e.printStackTrace();
+			return false;
+		}		
+	}
+	
+	
 	public static String getMood(){
 		String script = "tell application \"Skype\" to return (send command \"GET PROFILE MOOD_TEXT\" script name \"MoodGetter\")";
 		
